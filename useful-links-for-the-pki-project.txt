@@ -1,0 +1,2 @@
+https://www.mkyong.com/java/java-asymmetric-cryptography-example/
+https://docs.oracle.com/javase/6/docs/technotes/guides/security/certpath/CertPathProgGuide.html
