@@ -2,6 +2,8 @@ package com.pki.app;
 
 import com.pki.crypto.AsymmetricCryptography;
 import com.pki.crypto.GenerateKeys;
+import com.pki.crypto.Sign;
+import com.pki.crypto.SignVerify;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +25,7 @@ public class App {
                 gk.writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
                 gk.writeToFile("KeyPair/privateKey", gk.getPrivateKey().getEncoded());
             } else {
-                System.out.printf("Key exists");
+                System.out.print("Key exists");
             }
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
             System.err.println(e.getMessage());
@@ -34,7 +36,7 @@ public class App {
 
         String msg = "Gotta encrypt";
 
-        String encrypted_msg = ac.encryptText(msg, privateKey);
+/*        String encrypted_msg = ac.encryptText(msg, privateKey);
         String decrypted_msg = ac.decryptText(encrypted_msg, publicKey);
         System.out.println("Original Message: " + msg +
                 "\nEncrypted Message: " + encrypted_msg
@@ -47,7 +49,10 @@ public class App {
                     new File("KeyPair/text_decrypted.txt"), publicKey);
         } else {
             System.out.println("Create a file text.txt under folder KeyPair");
-        }
+        }*/
+
+        new Sign(msg, "KeyPair/privateKey").createFile("SignedMessages/SignedMsg.txt");
+        new SignVerify("SignedMessages/SignedMsg.txt", "KeyPair/publicKey");
     }
 }
 

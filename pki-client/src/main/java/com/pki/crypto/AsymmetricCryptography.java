@@ -4,7 +4,10 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.*;
@@ -48,8 +51,8 @@ public class AsymmetricCryptography {
         writeToFile(output, this.cipher.doFinal(input));
     }
 
-    public void writeToFile(File output, byte[] toWrite)
-            throws IllegalBlockSizeException, BadPaddingException, IOException {
+    private void writeToFile(File output, byte[] toWrite)
+            throws IOException {
         FileOutputStream fos = new FileOutputStream(output);
         fos.write(toWrite);
         fos.flush();
@@ -57,20 +60,21 @@ public class AsymmetricCryptography {
     }
 
     public String encryptText(String msg, PrivateKey key)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            UnsupportedEncodingException, IllegalBlockSizeException,
+            throws IllegalBlockSizeException,
             BadPaddingException, InvalidKeyException {
         this.cipher.init(Cipher.ENCRYPT_MODE, key);
         return Base64.getEncoder().encodeToString(cipher.doFinal(msg.getBytes(StandardCharsets.UTF_8)));
     }
 
     public String decryptText(String msg, PublicKey key)
-            throws InvalidKeyException, UnsupportedEncodingException,
+            throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
         this.cipher.init(Cipher.DECRYPT_MODE, key);
         return new String(cipher.doFinal(Base64.getDecoder().decode(msg)), StandardCharsets.UTF_8);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    // We do not care fis.read() result for now.
     public byte[] getFileInBytes(File f) throws IOException {
         FileInputStream fis = new FileInputStream(f);
         byte[] fbytes = new byte[(int) f.length()];
