@@ -20,7 +20,7 @@ public class App {
         GenerateKeys gk;
         try {
             if (!new File("KeyPair/publicKey").exists()) {
-                gk = new GenerateKeys(1024);
+                gk = new GenerateKeys(4096);
                 gk.createKeys();
                 gk.writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
                 gk.writeToFile("KeyPair/privateKey", gk.getPrivateKey().getEncoded());
