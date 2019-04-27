@@ -1,5 +1,7 @@
 package com.pki.app;
 
+import com.pki.crypto.Sign;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -26,6 +28,7 @@ class ClientHandler extends Thread {
                 // TODO: Certification goes here
                 //String test = in.readLine();
                 System.out.println("Test");
+                signIncomingUserData("test");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,5 +42,10 @@ class ClientHandler extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void signIncomingUserData(String incomingData) {
+        // TODO: change createFile to database query.
+        new Sign(incomingData, "KeyPair/privateKey").createFile("Signed/SignedData.txt");
     }
 }
