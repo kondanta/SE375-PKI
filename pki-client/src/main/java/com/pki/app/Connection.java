@@ -1,16 +1,14 @@
 package com.pki.app;
-import com.pki.crypto.AsymmetricCryptography;
 
-import javax.crypto.NoSuchPaddingException;
-import java.io.IOException;
+import com.pki.crypto.AsymmetricCryptography;
+import com.pki.database.Sqlite;
+
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.io.Serializable;
 
 // must implement Serializable in order to be sent
  class Message implements Serializable{
@@ -51,8 +49,8 @@ public class Connection {
         objectOutputStream.writeObject(new AsymmetricCryptography().getPublic("KeyPair/publicKey"));
 
         System.out.println("Closing socket and terminating program.");
+        new Sqlite().db();
         socket.close();
     }
 }
-
 
