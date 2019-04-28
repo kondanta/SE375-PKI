@@ -55,8 +55,9 @@ public class App {
         new SignVerify("SignedMessages/SignedMsg.txt", "KeyPair/publicKey");
 
         Connection connection = new Connection();
-
         connection.register();
+
+
 
     }
 }
