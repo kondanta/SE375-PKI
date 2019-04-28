@@ -2,11 +2,11 @@ package com.pki.app;
 
 import com.pki.crypto.Sign;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Scanner;
 
 class ClientHandler extends Thread {
     private Socket client;
@@ -29,6 +29,7 @@ class ClientHandler extends Thread {
             // Setting up the channels
             in =  new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(client.getOutputStream(), true);
+            //obIn = new ObjectInputStream(client.getInputStream());
             String textFromClient;
 
             while (loop) {
@@ -47,8 +48,32 @@ class ClientHandler extends Thread {
                         out.println("Cannot find the user!");
                         out.flush();
                         out.println("exit");
-                    }
-                    else if (textFromClient.equalsIgnoreCase("end")) {
+                    }else if(textFromClient.equalsIgnoreCase("register")) {
+                        out.println("Got your request. I need your name, email and public key!");
+                        out.flush();
+
+
+                        String email;
+                        String name;
+                        File pk;
+
+                        name = in.readLine();
+                        email = in.readLine();
+                        try {
+                            handlePrivateKey();
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        System.out.println(name + " " + email);
+                        out.println("Let me process it...");
+                        out.flush();
+                        // do cert
+                        // insert db
+                        out.println("You're registered!");
+                        out.println("done");
+
+                    }else if (textFromClient.equalsIgnoreCase("end")) {
                         isRunning = false;
                     } else if (!client.isConnected()) {
                         out.close();
@@ -64,6 +89,16 @@ class ClientHandler extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void handlePrivateKey() throws IOException, ClassNotFoundException {
+        ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+        Object obj = ois.readObject();
+
+        PrivateKey pkey = (PrivateKey) obj;
+
+        System.out.println(pkey);
+
     }
 
     private void signIncomingUserData(String incomingData) {
