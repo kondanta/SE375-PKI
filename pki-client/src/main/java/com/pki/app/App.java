@@ -53,6 +53,11 @@ public class App {
 
         new Sign(msg, "KeyPair/privateKey").createFile("SignedMessages/SignedMsg.txt");
         new SignVerify("SignedMessages/SignedMsg.txt", "KeyPair/publicKey");
+
+        Connection connection = new Connection();
+
+        connection.sendMessageToServer();
+
     }
 }
 

@@ -13,6 +13,7 @@ import java.security.NoSuchProviderException;
 public class Server {
     private ServerSocket serverSocket;
     private Socket client;
+    ClientHandler clientHandler;
     private boolean isServerOn = true;
     //private Calendar timestamp = Calendar.getInstance();
     //private SimpleDateFormat formatter = new SimpleDateFormat("E yyyy.MM.dd 'at' hh:mm:ss a zzz");
@@ -27,27 +28,24 @@ public class Server {
         }
     }
 
-    public void start() {
+    public void start() throws IOException {
         while (this.isServerOn) {
             try {
                 // Accepts incoming connections
                 client = serverSocket.accept();
 
-                ClientHandler clientHandler = new ClientHandler(client);
+                clientHandler = new ClientHandler(client);
                 clientHandler.run();
+
+                isServerOn = clientHandler.isServerClosed();
+                System.out.println("Finished");
 
             } catch (IOException e) {
                 e.printStackTrace();
-            } finally {
-                try {
-                    serverSocket.close();
-                    client.close();
-                } catch (IOException e) {
-                    System.out.println("Cannot close to server. SIGSEV'ing");
-                    System.exit(237);
-                }
             }
         }
+        client.close();
+        serverSocket.close();
     }
 
     private void createKeyPairForAuthorization() {

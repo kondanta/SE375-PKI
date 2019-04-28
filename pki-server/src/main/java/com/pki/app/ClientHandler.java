@@ -2,50 +2,73 @@ package com.pki.app;
 
 import com.pki.crypto.Sign;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 class ClientHandler extends Thread {
     private Socket client;
     private boolean isRunning = true;
+    private boolean loop = true;
+    BufferedReader in;
+    PrintWriter out;
 
     ClientHandler(Socket s) {
+        super("Connection");
         client = s;
     }
 
+    @Override
     public void run() {
-        BufferedReader in = null;
-        PrintWriter out = null;
 
         System.out.println("Client's addr: " + client.getInetAddress().getHostAddress());
 
         try {
             // Setting up the channels
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            out = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
+            in =  new BufferedReader(new InputStreamReader(client.getInputStream()));
+            out = new PrintWriter(client.getOutputStream(), true);
+            String textFromClient;
 
-            while (isRunning) {
-                // TODO: Certification goes here
-                //String test = in.readLine();
-                System.out.println("Test");
-                signIncomingUserData("test");
+            while (loop) {
+//                textFromClient = in.readLine();
+                while ((textFromClient = in.readLine()) != null) {
+                    if (textFromClient.equalsIgnoreCase("quit")) {
+                        out.close();
+                        in.close();
+                        loop = false;
+                        break;
+                    }
+
+                    System.out.println("Client says that " + textFromClient);
+                    signIncomingUserData("Client says that " + textFromClient);
+                    out.println("Wait a lil bit");
+
+                    if (textFromClient.equalsIgnoreCase("end")) {
+                        isRunning = false;
+                    } else if (!client.isConnected()) {
+                        out.close();
+                        in.close();
+                        break;
+                    } else {
+                        out.flush();
+                    }
+                }
+                out.close();
+                in.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                in.close();
-                out.close();
-                client.close();
-                System.out.println("Closing the thread.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private void signIncomingUserData(String incomingData) {
         // TODO: change createFile to database query.
         new Sign(incomingData, "KeyPair/privateKey").createFile("Signed/SignedData.txt");
+    }
+
+    public boolean isServerClosed() {
+        return isRunning;
     }
 }
