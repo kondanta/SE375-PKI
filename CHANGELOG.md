@@ -1,3 +1,6 @@
+## 0.4.0 (April 28, 2019)
+implement multi-thread TCP server/client relationship.
+
 ## 0.3.0 (April 27, 2019)
 implement Sign related functions on server. Those functions will allow us to Sign user
 certificate.
