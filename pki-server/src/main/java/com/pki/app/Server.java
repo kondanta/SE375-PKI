@@ -32,6 +32,7 @@ public class Server {
         while (this.isServerOn) {
             try {
                 // Accepts incoming connections
+                System.out.println("Running the Server!");
                 client = serverSocket.accept();
 
                 clientHandler = new ClientHandler(client);
