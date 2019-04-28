@@ -17,6 +17,10 @@ public class GenerateKeys {
         this.keyGen.initialize(keylength);
     }
 
+    // default ctor
+    public GenerateKeys() {
+    }
+
     public void createKeys() {
         this.pair = this.keyGen.generateKeyPair();
         this.privateKey = pair.getPrivate();

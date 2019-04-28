@@ -2,6 +2,7 @@ package com.pki.crypto;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
+import java.security.PublicKey;
 import java.security.Signature;
 import java.util.List;
 
@@ -10,15 +11,15 @@ public class SignVerify {
 
     @SuppressWarnings("unchecked")
     // We suppress uncheck because we have to cast read object to List<byte>[]
-    public SignVerify(String fileName, String keyFile) {
+    public SignVerify(String fileName, String keyFile, PublicKey key) {
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName));
             this.list = (List<byte[]>) ois.readObject();
             ois.close();
 
             System.out.println(
-                    verifySign(list.get(0), list.get(1), keyFile) ? "VERIFIED" + "\n-=================-\n"
-                            + new String(list.get(0)) : "NOT VERIFIED!"
+                    verifySign(list.get(0), list.get(1), keyFile) ? "Key VERIFIED" + "\n-=================-\n"
+                            : "NOT VERIFIED!"
             );
         } catch (Exception e) {
             e.printStackTrace();

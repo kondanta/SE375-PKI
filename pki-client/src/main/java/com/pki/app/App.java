@@ -1,20 +1,16 @@
 package com.pki.app;
 
-import com.pki.crypto.AsymmetricCryptography;
 import com.pki.crypto.GenerateKeys;
 import com.pki.crypto.Sign;
-import com.pki.crypto.SignVerify;
 
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.Scanner;
 
-/**
- * Hello world!
- */
+
+// This part of the client side, starts the application
 public class App {
     public static void main(String[] args) throws Exception {
         GenerateKeys gk;
@@ -25,40 +21,41 @@ public class App {
                 gk.writeToFile("KeyPair/publicKey", gk.getPublicKey().getEncoded());
                 gk.writeToFile("KeyPair/privateKey", gk.getPrivateKey().getEncoded());
             } else {
-                System.out.print("Key exists");
+                System.out.print("Key exists\n");
             }
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
             System.err.println(e.getMessage());
         }
-        AsymmetricCryptography ac = new AsymmetricCryptography();
-        PrivateKey privateKey = ac.getPrivate("KeyPair/privateKey");
-        PublicKey publicKey = ac.getPublic("KeyPair/publicKey");
-
-        String msg = "Gotta encrypt";
-
-/*        String encrypted_msg = ac.encryptText(msg, privateKey);
-        String decrypted_msg = ac.decryptText(encrypted_msg, publicKey);
-        System.out.println("Original Message: " + msg +
-                "\nEncrypted Message: " + encrypted_msg
-                + "\nDecrypted Message: " + decrypted_msg);
-
-        if (new File("KeyPair/text.txt").exists()) {
-            ac.encryptFile(ac.getFileInBytes(new File("KeyPair/text.txt")),
-                    new File("KeyPair/text_encrypted.txt"), privateKey);
-            ac.decryptFile(ac.getFileInBytes(new File("KeyPair/text_encrypted.txt")),
-                    new File("KeyPair/text_decrypted.txt"), publicKey);
-        } else {
-            System.out.println("Create a file text.txt under folder KeyPair");
-        }*/
-
-        new Sign(msg, "KeyPair/privateKey").createFile("SignedMessages/SignedMsg.txt");
-        new SignVerify("SignedMessages/SignedMsg.txt", "KeyPair/publicKey");
-
-        Connection connection = new Connection();
-        connection.register();
 
 
+        String signedText = "Signed Text";
+        new Sign(signedText, "KeyPair/privateKey").createFile("Signed/SignedDocument.txt");
 
+        Scanner scanner = new Scanner(System.in);
+        String arg = "";
+        while (!arg.equalsIgnoreCase("q")) {
+            System.out.println("========== Usage ==========");
+            System.out.println("-r for register, -g for get user key -q for quit");
+            arg = scanner.nextLine();
+
+            if (arg.equalsIgnoreCase("-r")) {
+                Scanner in = new Scanner(System.in);
+                System.out.println("name: ");
+                String name = in.nextLine();
+                System.out.println("email");
+                String email = in.nextLine();
+
+                new Connection().register(name, email);
+            } else if (arg.equalsIgnoreCase("-g")) {
+                Scanner in = new Scanner(System.in);
+                System.out.println("name: ");
+                String name = in.nextLine();
+                new Connection().getUser(name);
+
+            } else if (arg.equalsIgnoreCase("-q")) {
+                break;
+            }
+        }
     }
 }
 
