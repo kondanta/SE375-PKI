@@ -1,91 +1,58 @@
 package com.pki.app;
-
 import com.pki.crypto.AsymmetricCryptography;
 
-import java.io.*;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Socket;
-import java.util.HashMap;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
+import java.io.Serializable;
+
+// must implement Serializable in order to be sent
+ class Message implements Serializable{
+    private final String text;
+
+    public Message(String text) {
+        this.text = text;
+    }
+
+    public String getText() {
+        return text;
+    }
+}
 public class Connection {
-    Socket socket;
-    PrintWriter dos;
-    BufferedReader br;
-
-    Connection() {
-        try {
-            socket = new Socket("localhost", 4400);
-            dos = new PrintWriter(socket.getOutputStream(), true);
-            br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-        } catch (IOException e) {
-            System.out.println("I cannot open the port. Quiting...");
-            System.exit(-1);
-        }
-    }
-
-
-    public void sendGetPublicKeyRequest(String email) throws IOException {
-        dos.println("get-" + email);
-        dos.flush();
-
-        String response;
-        while ((response = br.readLine()) != null) {
-            System.out.println("Waiting server's response...");
-            if (response.equalsIgnoreCase("done")) break;
-            if (response.equalsIgnoreCase("exit")) {
-                System.out.println("User did not found!");
-                dos.println("quit");
-                break;
-            }
-        }
-        System.out.println("Done!");
-        closeSocket();
-    }
 
     public void register() throws Exception {
+        // need host and port, we want to connect to the ServerSocket at port 7777
+        Socket socket = new Socket("172.16.1.13", 4400);
+        System.out.println("Connected!");
 
-        dos.println("register");
-        dos.flush();
+        // get the output stream from the socket.
+        OutputStream outputStream = socket.getOutputStream();
+        // create an object output stream from the output stream so we can send an object through it
+        ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
-        dos.println("ali veli");
-        dos.flush();
+        // make a bunch of messages to send.
+        List<Message> messages = new ArrayList<>();
+        messages.add(new Message("Hello from the other side!"));
+        messages.add(new Message("How are you doing?"));
+        messages.add(new Message("What time is it?"));
+        messages.add(new Message("Hi hi hi hi."));
 
-        dos.println("ali@veli.com");
-        dos.flush();
 
-        handleKey();
 
-        String response;
-        while ((response = br.readLine()) != null) {
-            if (response.equalsIgnoreCase("done")) {
-                System.out.println("Registered");
-                dos.println("quit");
-                break;
+        System.out.println("Sending messages to the ServerSocket");
+        objectOutputStream.writeObject(messages);
+        objectOutputStream.flush();
+        objectOutputStream.writeObject(new AsymmetricCryptography().getPublic("KeyPair/publicKey"));
 
-            }
-        }
-
-        closeSocket();
-    }
-
-    void handleKey() {
-        try {
-            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            try {
-                oos.writeObject(new AsymmetricCryptography().getPublic("KeyPair/publicKey"));
-                oos.flush();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void closeSocket() throws IOException {
+        System.out.println("Closing socket and terminating program.");
         socket.close();
-        br.close();
-        dos.close();
     }
-
 }
+
+
