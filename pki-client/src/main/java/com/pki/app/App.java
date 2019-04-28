@@ -12,9 +12,8 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-/**
- * Hello world!
- */
+
+// This part of the client side, starts the application
 public class App {
     public static void main(String[] args) throws Exception {
         GenerateKeys gk;
@@ -30,29 +29,7 @@ public class App {
         } catch (NoSuchAlgorithmException | NoSuchProviderException | IOException e) {
             System.err.println(e.getMessage());
         }
-        AsymmetricCryptography ac = new AsymmetricCryptography();
-        PrivateKey privateKey = ac.getPrivate("KeyPair/privateKey");
-        PublicKey publicKey = ac.getPublic("KeyPair/publicKey");
 
-        String msg = "Gotta encrypt";
-
-/*        String encrypted_msg = ac.encryptText(msg, privateKey);
-        String decrypted_msg = ac.decryptText(encrypted_msg, publicKey);
-        System.out.println("Original Message: " + msg +
-                "\nEncrypted Message: " + encrypted_msg
-                + "\nDecrypted Message: " + decrypted_msg);
-
-        if (new File("KeyPair/text.txt").exists()) {
-            ac.encryptFile(ac.getFileInBytes(new File("KeyPair/text.txt")),
-                    new File("KeyPair/text_encrypted.txt"), privateKey);
-            ac.decryptFile(ac.getFileInBytes(new File("KeyPair/text_encrypted.txt")),
-                    new File("KeyPair/text_decrypted.txt"), publicKey);
-        } else {
-            System.out.println("Create a file text.txt under folder KeyPair");
-        }*/
-
-        new Sign(msg, "KeyPair/privateKey").createFile("SignedMessages/SignedMsg.txt");
-        new SignVerify("SignedMessages/SignedMsg.txt", "KeyPair/publicKey");
 
         Connection connection = new Connection();
         connection.register();
