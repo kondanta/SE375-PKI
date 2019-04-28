@@ -1,7 +1,6 @@
 package com.pki.app;
 
 import com.pki.crypto.AsymmetricCryptography;
-import com.pki.database.Sqlite;
 
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // must implement Serializable in order to be sent
- class Message implements Serializable{
+class Message implements Serializable {
     private final String text;
 
     public Message(String text) {
@@ -22,6 +21,7 @@ import java.util.List;
         return text;
     }
 }
+
 public class Connection {
 
     public void register() throws Exception {
@@ -31,17 +31,14 @@ public class Connection {
 
         // get the output stream from the socket.
         OutputStream outputStream = socket.getOutputStream();
-        // create an object output stream from the output stream so we can send an object through it
+        // create an object output stream from the output stream so we can send an
+        // object through it
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
         // make a bunch of messages to send.
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("Hello from the other side!"));
-        messages.add(new Message("How are you doing?"));
-        messages.add(new Message("What time is it?"));
-        messages.add(new Message("Hi hi hi hi."));
-
-
+        messages.add(new Message("Michael Scott"));
+        messages.add(new Message("theWorldsBestBoss@DunderMifflin.com"));
 
         System.out.println("Sending messages to the ServerSocket");
         objectOutputStream.writeObject(messages);
@@ -53,4 +50,3 @@ public class Connection {
         socket.close();
     }
 }
-
