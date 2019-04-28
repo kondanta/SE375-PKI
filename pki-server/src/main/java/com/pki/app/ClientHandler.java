@@ -57,7 +57,7 @@ class ClientHandler extends Thread {
             PublicKey obj = (PublicKey) in.readObject();
             System.out.println(obj);
 
-            System.out.println("Closing sockets.");
+            System.out.println("Closing sockets");
             client.close();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
