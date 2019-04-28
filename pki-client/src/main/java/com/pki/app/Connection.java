@@ -25,7 +25,7 @@ class Message implements Serializable {
 public class Connection {
 
     public void register() throws Exception {
-        // need host and port, we want to connect to the ServerSocket at port 7777
+        // need host and port, we want to connect to the ServerSocket at port 4400
         Socket socket = new Socket("172.16.1.13", 4400);
         System.out.println("Connected!");
 
@@ -35,7 +35,7 @@ public class Connection {
         // object through it
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
 
-        // make a bunch of messages to send.
+
         List<Message> messages = new ArrayList<>();
         messages.add(new Message("Michael Scott"));
         messages.add(new Message("theWorldsBestBoss@DunderMifflin.com"));
@@ -46,7 +46,7 @@ public class Connection {
         objectOutputStream.writeObject(new AsymmetricCryptography().getPublic("KeyPair/publicKey"));
 
         System.out.println("Closing socket and terminating program.");
-        new Sqlite().db();
+
         socket.close();
     }
 }
