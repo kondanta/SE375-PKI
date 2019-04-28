@@ -39,13 +39,16 @@ class ClientHandler extends Thread {
                         in.close();
                         loop = false;
                         break;
+                    } else if(textFromClient.split("-")[0].equalsIgnoreCase("get")){
+                        // TODO: db query here
+                        String email = textFromClient.split("-")[1];
+                        out.println("Looking for the user!");
+                        out.flush();
+                        out.println("Cannot find the user!");
+                        out.flush();
+                        out.println("exit");
                     }
-
-                    System.out.println("Client says that " + textFromClient);
-                    signIncomingUserData("Client says that " + textFromClient);
-                    out.println("Wait a lil bit");
-
-                    if (textFromClient.equalsIgnoreCase("end")) {
+                    else if (textFromClient.equalsIgnoreCase("end")) {
                         isRunning = false;
                     } else if (!client.isConnected()) {
                         out.close();

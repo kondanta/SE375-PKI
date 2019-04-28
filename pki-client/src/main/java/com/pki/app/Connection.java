@@ -30,6 +30,24 @@ public class Connection {
         dos.close();
     }
 
+    public void sendGetPublicKeyRequest(String email) throws IOException {
+        dos.println("get-" + email);
+        dos.flush();
+
+        String response;
+        while((response = br.readLine()) != null) {
+            System.out.println("Waiting server's response...");
+            if(response.equalsIgnoreCase("done")) break;
+            if(response.equalsIgnoreCase("exit")) {
+                System.out.println("User did not found!");
+                dos.println("quit");
+                break;
+            }
+        }
+        System.out.println("Done!");
+        closeSocket();
+    }
+
     public void closeSocket() throws IOException {
         socket.close();
         br.close();

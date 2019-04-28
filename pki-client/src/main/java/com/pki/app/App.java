@@ -56,7 +56,7 @@ public class App {
 
         Connection connection = new Connection();
 
-        connection.sendMessageToServer();
+        connection.sendGetPublicKeyRequest("ali@veli.com");
 
     }
 }
