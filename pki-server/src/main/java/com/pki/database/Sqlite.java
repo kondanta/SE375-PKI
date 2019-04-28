@@ -1,16 +1,12 @@
 package com.pki.database;
 
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Sqlite {
     private static final String URL = "jdbc:sqlite:data.db";
 
-    public void db(){
+    public Sqlite(){
         createDb();
         createTable();
         insertPerson("Thomas", 15);

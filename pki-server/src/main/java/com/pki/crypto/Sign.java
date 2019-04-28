@@ -12,18 +12,18 @@ public class Sign {
     private List<byte[]> list;
 
     // Constructor takes message and the key
-    public Sign(String data, String keyFile) {
+    public Sign(byte[] data, String keyFile) {
         list = new ArrayList<>();
-        list.add(data.getBytes());
+        list.add(data);
         list.add(sign(data, keyFile)); // keyfile: KeyPair/privateKey
     }
 
     // Signs the data using generated key.
-    private byte[] sign(String data, String keyFile) {
+    private byte[] sign(byte[] data, String keyFile) {
         try {
             Signature rsa = Signature.getInstance("SHA1withRSA");
             rsa.initSign(new AsymmetricCryptography().getPrivate(keyFile));
-            rsa.update(data.getBytes());
+            rsa.update(data);
             return rsa.sign();
         } catch (Exception e) {
             e.printStackTrace();
