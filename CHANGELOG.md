@@ -1,5 +1,9 @@
-## 0.5.0 (April 28, 2019)
+## 0.6.0 (April 28, 2019)
+implement certification
+	- signs name, email and public key as a bundle
 
+## 0.5.0 (April 28, 2019)
+implement sending public key through socket
 
 ## 0.4.0 (April 28, 2019)
 implement multi-thread TCP server/client relationship.
