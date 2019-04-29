@@ -1,3 +1,6 @@
+## 0.7.0 (April 29, 2019)
+
+
 ## 0.6.0 (April 28, 2019)
 implement certification
 	- signs name, email and public key as a bundle
