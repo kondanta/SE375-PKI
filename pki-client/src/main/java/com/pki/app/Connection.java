@@ -43,7 +43,7 @@ public class Connection {
         fos.close();
     }
 
-    public void getUser() {
+    public void getUser(String name) {
         // if expiration flag is true, also ask for the expiration.
         // get the output stream from the socket.
         try {
@@ -58,7 +58,7 @@ public class Connection {
             objectOutputStream.writeUTF("get");
             objectOutputStream.flush();
 
-            objectOutputStream.writeUTF("Michael Scott");
+            objectOutputStream.writeUTF(name);
             objectOutputStream.flush();
 
             boolean isErrorFlag = objectInputStream.readBoolean();
@@ -70,18 +70,26 @@ public class Connection {
 
                 byte[] data = (byte[]) objectInputStream.readObject();
                 PublicKey pkey = (PublicKey) objectInputStream.readObject();
+                PublicKey usersKey = (PublicKey) objectInputStream.readObject();
+                String user = objectInputStream.readUTF();
+                String expiration = objectInputStream.readUTF();
+
+                System.out.println(user + "'s key expiration date is: " +
+                        expiration.replaceAll("[^\\d-\\-]", "") + " Key is: " + usersKey);
 
                 writeToFile("KeyPair/serverKey", pkey.getEncoded());
                 writeToFile("Signed/data", data);
+                writeToFile("Signed/userKey", usersKey.getEncoded());
 
-                new SignVerify("Signed/data", "KeyPair/serverKey");
+                new SignVerify("Signed/data", "KeyPair/serverKey", usersKey);
+                verifyKey(pkey);
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public void register() throws Exception {
+    public void register(String name, String email) throws Exception {
         // need host and port, we want to connect to the ServerSocket at port 4400
         System.out.println("Connected!");
 
@@ -97,8 +105,8 @@ public class Connection {
         objectOutputStream.flush();
 
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message("Michael Scott"));
-        messages.add(new Message("theWorldsBestBoss@DunderMifflin.com"));
+        messages.add(new Message(name));
+        messages.add(new Message(email));
 
         System.out.println("Sending messages to the ServerSocket");
         objectOutputStream.writeObject(messages);
@@ -112,5 +120,9 @@ public class Connection {
         System.out.println("Closing socket and terminating program.");
 
         socket.close();
+    }
+
+    private void verifyKey(PublicKey userskey) {
+        new SignVerify("Signed/SignedDocument.txt", "Signed/userKey", userskey);
     }
 }

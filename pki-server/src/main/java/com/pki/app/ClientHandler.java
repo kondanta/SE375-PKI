@@ -2,11 +2,15 @@ package com.pki.app;
 
 import com.pki.crypto.AsymmetricCryptography;
 import com.pki.crypto.Certification;
+import com.pki.crypto.GenerateKeys;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,10 +68,12 @@ class ClientHandler extends Thread {
                 object.forEach((data) -> values.add(data.getText().getBytes()));
                 values.add(obj.getEncoded());
 
+
                 String userName = object.get(0).getText().toLowerCase().trim().replace(" ", "-");
                 byte[] goingToBeSignedData = createCertBundle(values);
                 new Certification().signIncomingUserData(goingToBeSignedData, userName);
 
+                new GenerateKeys().writeToFile("Signed/" + userName + "-key", obj.getEncoded());
                 String expirationDate = createTimeStamp();
                 out.writeUTF(expirationDate);
                 out.flush();
@@ -79,18 +85,25 @@ class ClientHandler extends Thread {
                 String username = in.readUTF();
                 String usernameSanitized = username.toLowerCase().trim().replace(" ", "-");
                 String filePath = "Signed/" + usernameSanitized;
+                String filePathOfKey = "Signed/" + usernameSanitized + "-key";
+                String timestamp = readFile("Signed/" + usernameSanitized + "-timestamp", StandardCharsets.UTF_8);
 
                 try {
                     byte[] data = Files.readAllBytes(new File(filePath).toPath());
+                    PublicKey usersKey = new AsymmetricCryptography().getPublic(filePathOfKey);
                     PublicKey publicKey = new AsymmetricCryptography().getPublic("KeyPair/publicKey");
-                    System.out.println(publicKey);
                     out.writeBoolean(false);
                     out.writeObject(data);
                     out.flush();
                     out.writeObject(publicKey);
                     out.flush();
+                    out.writeObject(usersKey);
+                    out.flush();
                     out.writeUTF(username);
                     out.flush();
+                    out.writeUTF(timestamp);
+                    out.flush();
+
 
                 } catch (NoSuchFileException e) {
                     out.writeBoolean(true);
@@ -147,5 +160,11 @@ class ClientHandler extends Thread {
             System.out.println("Couldn't create the expiration date for the user!");
             e.printStackTrace();
         }
+    }
+
+    String readFile(String path, Charset encoding)
+            throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(path));
+        return new String(encoded, encoding);
     }
 }
