@@ -1,6 +1,7 @@
 package com.pki.database;
 
 
+import java.security.PrivateKey;
 import java.sql.*;
 
 public class Sqlite {
@@ -9,15 +10,14 @@ public class Sqlite {
     public Sqlite(){
         createDb();
         createTable();
-        insertPerson("Thomas", 15);
-        insertPerson("Walter", 32);
     }
 
-    private static void insertPerson(String name, int age) {
-        final String SQL = "INSERT INTO persons VALUES(?,?)";
+    public static void insertPerson(String name, String email, PrivateKey key) {
+        final String SQL = "INSERT INTO persons VALUES(?,?,?)";
         try (Connection con = getConnection(); PreparedStatement ps = con.prepareStatement(SQL);) {
             ps.setString(1, name); // First question mark will be replaced by name variable - String;
-            ps.setInt(2, age); // Second question mark will be replaced by name variable - Integer;
+            ps.setString(2, email); // Second question mark will be replaced by name variable - Integer;
+            ps.setObject(3, key);
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -25,7 +25,7 @@ public class Sqlite {
     }
 
     private static void createTable() {
-        final String SQL = "CREATE TABLE IF NOT EXISTS persons (name TEXT, age INTEGER);";
+        final String SQL = "CREATE TABLE IF NOT EXISTS persons (name TEXT, email TEXT, publicKey TEXT);";
         // This SQL Query is not "dynamic". Columns are static, so no need to use
         // PreparedStatement.
         try (Connection con = getConnection(); Statement statement = con.createStatement();) {
@@ -46,7 +46,14 @@ public class Sqlite {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL);
+        try {
+            Class.forName("org.sqlite.JDBC");
+            return DriverManager.getConnection(URL);
+        } catch (ClassNotFoundException e) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            e.printStackTrace();
+        }
+        return null;
     }
 }
 
